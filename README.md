@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Overlap Chatbot
 
 A modern, fast, and customizable AI chatbot web app built with Flask and JavaScript. Overlap provides detailed, structured answers and a beautiful UI, ready for local or cloud deployment.
@@ -8,7 +7,7 @@ A modern, fast, and customizable AI chatbot web app built with Flask and JavaScr
 - User authentication (Firebase)
 - Customizable system prompt and model
 - Professional, modern design with your own logo
-- Real-time time queries, curated answers, and fallback to LLM
+- Real-time time queries, curated answers, and fallback to LLM (via OpenRouter)
 
 ## Demo
 ![screenshot](mylogo.png)
@@ -26,6 +25,8 @@ cd overlap-chatbot
 pip install -r requirements.txt
 ```
 
+**Note:** The backend now uses the [OpenAI Python SDK](https://pypi.org/project/openai/) to connect to [OpenRouter](https://openrouter.ai/). The `openai` package is required and included in `requirements.txt`.
+
 ### 3. Run the Flask app
 ```bash
 python app.py
@@ -33,9 +34,10 @@ python app.py
 
 - The app will be available at [http://localhost:8000](http://localhost:8000)
 
-### 4. (Optional) Configure your LLM backend
-- By default, the app expects a local LLM server at `http://localhost:4891/v1/chat/completions`.
+### 4. Configure your LLM backend (OpenRouter)
+- By default, the app uses OpenRouter as the LLM backend via the OpenAI SDK.
 - You can change the model or endpoint in `app.py`.
+- Make sure to set your OpenRouter API key in `app.py`.
 
 ### 5. (Optional) Firebase Auth
 - Update `auth.html` with your Firebase project credentials if you want to use authentication.
@@ -48,7 +50,4 @@ python app.py
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
-MIT 
-=======
-# overlap_ai
->>>>>>> 9f534cde7e4db5c4013b21071bbbeeede246a29b
+MIT
