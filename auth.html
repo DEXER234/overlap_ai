@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Signup - OVERLAP</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563EB;
+            --primary-light: #3B82F6;
+            --primary-dark: #1D4ED8;
+            --bg: #0F172A;
+            --bg-light: #1E293B;
+            --bg-lighter: #334155;
+            --text: #F8FAFC;
+            --text-light: #CBD5E1;
+            --accent: #06B6D4;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'IBM Plex Mono', monospace, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .auth-card {
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg) 100%);
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            width: 100%;
+            max-width: 400px;
+            padding: 32px 28px 24px 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .custom-logo {
+            width: 80px;
+            height: 40px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .tab-toggle {
+            display: flex;
+            width: 100%;
+            margin-bottom: 18px;
+            justify-content: center;
+        }
+        .tab-toggle button {
+            flex: 1;
+            padding: 10px 0;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 16px;
+            font-weight: 600;
+            border-bottom: 2.5px solid transparent;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .tab-toggle button.active {
+            color: var(--primary);
+            border-bottom: 2.5px solid var(--primary);
+        }
+        .auth-form {
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .auth-form.active {
+            display: flex;
+        }
+        .auth-form label {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 2px;
+        }
+        .auth-form input {
+            width: 100%;
+            padding: 10px 0;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: var(--bg-lighter);
+            color: var(--text);
+            font-size: 15px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .auth-form input:focus {
+            border: 1.5px solid var(--primary);
+        }
+        .auth-form .form-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 4px;
+        }
+        .auth-form button[type="submit"] {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 0;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .auth-form button[type="submit"]:hover {
+            background: var(--primary-dark);
+        }
+        .auth-form .form-link {
+            color: var(--primary);
+            text-align: right;
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .auth-form .form-link:hover {
+            color: var(--accent);
+        }
+        .auth-form .switch-link {
+            color: var(--text-light);
+            text-align: center;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 2px;
+        }
+        @media (max-width: 500px) {
+            .auth-card {
+                padding: 16px 4px 10px 4px;
+                max-width: 98vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <img src="mylogo.png" alt="Logo" class="custom-logo" />
+        <div class="tab-toggle">
+            <button id="loginTab" class="active" onclick="showForm('login')">Login</button>
+            <button id="signupTab" onclick="showForm('signup')">Sign Up</button>
+        </div>
+        <form id="loginForm" class="auth-form active" autocomplete="off">
+            <div>
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" name="email" required autocomplete="username">
+            </div>
+            <div>
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" name="password" required autocomplete="current-password">
+            </div>
+            <div class="form-actions">
+                <button type="submit">Login</button>
+                <a href="#" class="form-link">Forgot password?</a>
+            </div>
+            <div class="switch-link" onclick="showForm('signup')">Don't have an account? <span style="color:var(--primary);font-weight:600;">Sign up</span></div>
+        </form>
+        <form id="signupForm" class="auth-form" autocomplete="off">
+            <div>
+                <label for="signup-email">Email</label>
+                <input type="email" id="signup-email" name="email" required autocomplete="username">
+            </div>
+            <div>
+                <label for="signup-password">Password</label>
+                <input type="password" id="signup-password" name="password" required autocomplete="new-password">
+            </div>
+            <div>
+                <label for="signup-confirm">Confirm Password</label>
+                <input type="password" id="signup-confirm" name="confirm" required autocomplete="new-password">
+            </div>
+            <div class="form-actions">
+                <button type="submit">Sign Up</button>
+            </div>
+            <div class="switch-link" onclick="showForm('login')">Already have an account? <span style="color:var(--primary);font-weight:600;">Login</span></div>
+        </form>
+    </div>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+      import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyATXHX2ELsoeSthysJo32lnaxdSyXbDC3I",
+        authDomain: "overlap-c6470.firebaseapp.com",
+        projectId: "overlap-c6470",
+        storageBucket: "overlap-c6470.firebasestorage.app",
+        messagingSenderId: "1057711968590",
+        appId: "1:1057711968590:web:e0590ed8617a56c8744e1f",
+        measurementId: "G-PP8GNB50CX"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      const auth = getAuth(app);
+
+      // Make showForm globally available for tab switching
+      window.showForm = function(form) {
+        document.getElementById('loginForm').classList.remove('active');
+        document.getElementById('signupForm').classList.remove('active');
+        document.getElementById('loginTab').classList.remove('active');
+        document.getElementById('signupTab').classList.remove('active');
+        if (form === 'login') {
+          document.getElementById('loginForm').classList.add('active');
+          document.getElementById('loginTab').classList.add('active');
+        } else {
+          document.getElementById('signupForm').classList.add('active');
+          document.getElementById('signupTab').classList.add('active');
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const email = document.getElementById('signup-email').value;
+          const password = document.getElementById('signup-password').value;
+          const confirm = document.getElementById('signup-confirm').value;
+          if (password !== confirm) {
+            alert('Passwords do not match!');
+            return;
+          }
+          try {
+            const userCred = await createUserWithEmailAndPassword(auth, email, password);
+            localStorage.setItem('overlapUser', JSON.stringify(userCred.user));
+            window.location.href = 'index.html';
+          } catch (error) {
+            alert(error.message);
+          }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const email = document.getElementById('login-email').value;
+          const password = document.getElementById('login-password').value;
+          try {
+            const userCred = await signInWithEmailAndPassword(auth, email, password);
+            localStorage.setItem('overlapUser', JSON.stringify(userCred.user));
+            window.location.href = 'index.html';
+          } catch (error) {
+            alert(error.message);
+          }
+        });
+      });
+    </script>
+</body>
+</html> 
