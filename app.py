@@ -94,6 +94,7 @@ def chat():
     OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY') or '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'
     if not OPENROUTER_API_KEY:
         return jsonify({'response': "Sorry, no answer found and no LLM API key is set."})
+    print("Using OpenRouter API Key:", OPENROUTER_API_KEY)
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json"
