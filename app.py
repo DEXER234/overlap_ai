@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from openai import OpenAI
 
 app = Flask(__name__)
@@ -7,6 +7,10 @@ client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key="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",  # Replace with your valid OpenRouter API key
 )
+
+@app.route('/')
+def index():
+    return send_from_directory('.', 'index.html')
 
 @app.route('/chat', methods=['POST'])
 def chat():
