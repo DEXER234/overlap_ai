@@ -8,6 +8,7 @@ try:
     from serpapi import GoogleSearch
 except ImportError:
     GoogleSearch = None
+import os
 
 app = Flask(__name__)
 
@@ -84,34 +85,39 @@ def chat():
         return jsonify({'response': "I was made by Debanjan."})
     if any(phrase in user_message for phrase in ["your name", "who are you", "what is your name", "about this chatbot", "what are you"]):
         return jsonify({'response': "My name is OVERLAP. I'm your AI chatbot assistant, here to help you with anything you need!"})
-    response = None  # <-- Fix: Initialize response to None
+    # Curated answers
+    for q, a in CURATED_ANSWERS.items():
+        if q in user_message:
+            return jsonify({'response': a})
+    # Fallback: OpenRouter LLM API
+    OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY')
+    if not OPENROUTER_API_KEY:
+        return jsonify({'response': "Sorry, no answer found and no LLM API key is set."})
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    openrouter_payload = {
+        "model": "openai/gpt-3.5-turbo",
+        "messages": [
+            {"role": "system", "content": "You are OVERLAP, a super-fast, highly knowledgeable, and professional AI assistant. Always provide detailed, comprehensive, and well-structured answers. Use headings, bullet points, and paragraphs for clarity and readability. Start with a concise summary or main point in bold or highlighted text. Ensure your responses are easy to scan and visually appealing. Respond as quickly as possible while maintaining depth and accuracy."},
+            {"role": "user", "content": user_message}
+        ],
+        "temperature": 0.3,
+        "max_tokens": 128,
+        "top_p": 0.9
+    }
     try:
         response = requests.post(
-            "http://localhost:4891/v1/chat/completions",
-            json={
-                "messages": [
-                    {"role": "system", "content": "You are OVERLAP, a super-fast, highly knowledgeable, and professional AI assistant. Always provide detailed, comprehensive, and well-structured answers. Use headings, bullet points, and paragraphs for clarity and readability. Start with a concise summary or main point in bold or highlighted text. Ensure your responses are easy to scan and visually appealing. Respond as quickly as possible while maintaining depth and accuracy."},
-                    {"role": "user", "content": user_message}
-                ],
-                "model": "Llama 3.2 3B Instruct",
-                "temperature": 0.3,
-                "max_tokens": 128,
-                "top_p": 0.9
-            }
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers=headers,
+            json=openrouter_payload
         )
         data = response.json()
         bot_reply = data['choices'][0]['message']['content']
-        # Highlight the first sentence in orange
-        first_sentence_end = bot_reply.find('.')
-        if first_sentence_end != -1:
-            main = bot_reply[:first_sentence_end+1]
-            rest = bot_reply[first_sentence_end+1:]
-            bot_reply = f'<span style="color:#06B6D4;font-weight:bold;">{main}</span>{rest}'
-        formatted_reply = format_answer(bot_reply)
-        return jsonify({'response': formatted_reply})
+        return jsonify({'response': bot_reply})
     except Exception as e:
-        print("GPT4All server response:", getattr(response, 'text', 'No response'))
-        return jsonify({'response': "Sorry, there was an error connecting to your local LLM. Please check the model name and server status."})
+        return jsonify({'response': "Sorry, there was an error connecting to the free LLM API. Please try again later."})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=8000) 
