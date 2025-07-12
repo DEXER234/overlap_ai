@@ -9,6 +9,12 @@ try:
 except ImportError:
     GoogleSearch = None
 import os
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key="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",
+)
 
 app = Flask(__name__)
 
@@ -89,44 +95,22 @@ def chat():
     for q, a in CURATED_ANSWERS.items():
         if q in user_message:
             return jsonify({'response': a})
-    # Fallback: OpenRouter LLM API
-    # WARNING: Do NOT commit your API key to public repositories. Use environment variables in production.
-    OPENROUTER_API_KEY = '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'
-    if not OPENROUTER_API_KEY:
-        return jsonify({'response': "Sorry, no answer found and no LLM API key is set."})
-    print("Using OpenRouter API Key:", OPENROUTER_API_KEY)
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    openrouter_payload = {
-        "model": "google/gemma-3n-4b",
-        "messages": [
-            {"role": "system", "content": "You are OVERLAP, a super-fast, highly knowledgeable, and professional AI assistant. Always provide detailed, comprehensive, and well-structured answers. Use headings, bullet points, and paragraphs for clarity and readability. Start with a concise summary or main point in bold or highlighted text. Ensure your responses are easy to scan and visually appealing. Respond as quickly as possible while maintaining depth and accuracy."},
-            {"role": "user", "content": user_message}
-        ],
-        "temperature": 0.3,
-        "max_tokens": 128,
-        "top_p": 0.9
-    }
+    # Fallback: OpenRouter LLM API using OpenAI SDK
     try:
-        response = requests.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers=headers,
-            json=openrouter_payload
+        completion = client.chat.completions.create(
+            model="google/gemma-3n-4b",
+            messages=[
+                {"role": "system", "content": "You are OVERLAP, a super-fast, highly knowledgeable, and professional AI assistant. Always provide detailed, comprehensive, and well-structured answers. Use headings, bullet points, and paragraphs for clarity and readability. Start with a concise summary or main point in bold or highlighted text. Ensure your responses are easy to scan and visually appealing. Respond as quickly as possible while maintaining depth and accuracy."},
+                {"role": "user", "content": user_message}
+            ]
         )
-        data = response.json()
-        # Debug: print the full API response if not as expected
-        if 'choices' not in data or not data['choices']:
-            print('OpenRouter API error or unexpected response:', data)
-            return jsonify({'response': f"Sorry, the LLM API returned an error: {data.get('error', data)}"})
-        bot_reply = data['choices'][0]['message']['content']
+        bot_reply = completion.choices[0].message.content
         return jsonify({'response': bot_reply})
     except Exception as e:
         import traceback
         print("OpenRouter API exception:", e)
         traceback.print_exc()
-        return jsonify({'response': "Sorry, there was an error connecting to the free LLM API. Please try again later."})
+        return jsonify({'response': "Sorry, there was an error connecting to the LLM API. Please try again later."})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=8000) 
