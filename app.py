@@ -115,9 +115,16 @@ def chat():
             json=openrouter_payload
         )
         data = response.json()
+        # Debug: print the full API response if not as expected
+        if 'choices' not in data or not data['choices']:
+            print('OpenRouter API error or unexpected response:', data)
+            return jsonify({'response': f"Sorry, the LLM API returned an error: {data.get('error', data)}"})
         bot_reply = data['choices'][0]['message']['content']
         return jsonify({'response': bot_reply})
     except Exception as e:
+        import traceback
+        print("OpenRouter API exception:", e)
+        traceback.print_exc()
         return jsonify({'response': "Sorry, there was an error connecting to the free LLM API. Please try again later."})
 
 if __name__ == '__main__':
