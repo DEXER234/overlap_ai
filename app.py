@@ -114,5 +114,5 @@ def chat():
         return jsonify({'response': "Sorry, there was an error connecting to your local LLM. Please check the model name and server status."})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8000) 
+    app.run(host='0.0.0.0', debug=True, port=8000) 
 
