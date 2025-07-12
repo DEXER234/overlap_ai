@@ -1,5 +1,2 @@
 Flask
-requests
-pytz
-serpapi 
 openai 

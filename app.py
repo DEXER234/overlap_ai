@@ -1,116 +1,27 @@
-from flask import Flask, send_from_directory, request, jsonify
-import requests
-import re
-import pytz
-from datetime import datetime
-# Add SerpAPI import
-try:
-    from serpapi import GoogleSearch
-except ImportError:
-    GoogleSearch = None
-import os
+from flask import Flask, request, jsonify
 from openai import OpenAI
-
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key="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",
-)
 
 app = Flask(__name__)
 
-# Set your SerpAPI key here
-SERPAPI_KEY = '7e75e8033f5fb975b046bd6c693c50b049da3f3328ec6425edadc827cd260416'
-
-# Curated answers for popular questions
-CURATED_ANSWERS = {
-    'top 10 best place to visit in india': (
-        "<h3>Top 10 Places to Visit in India</h3>"
-        "<ul>"
-        "<li><b>Taj Mahal</b>, Agra</li>"
-        "<li>Jaipur (The Pink City)</li>"
-        "<li>Kerala Backwaters</li>"
-        "<li>Goa Beaches</li>"
-        "<li>Varanasi</li>"
-        "<li>Ladakh</li>"
-        "<li>Rishikesh</li>"
-        "<li>Andaman & Nicobar Islands</li>"
-        "<li>Darjeeling</li>"
-        "<li>Ranthambore National Park</li>"
-        "</ul>"
-        "<p>Each of these destinations offers a unique experience, from history and culture to nature and adventure.</p>"
-    ),
-    # Add more curated Q&A pairs here
-}
-
-def format_answer(answer):
-    # If already contains HTML, return as is
-    if any(tag in answer for tag in ['<ul', '<ol', '<h', '<p', '<b', '<strong']):
-        return answer
-    # Format numbered or bulleted lists
-    if re.search(r'\n\d+\. ', answer):
-        # Convert numbered list to <ul><li>...</li></ul>
-        items = re.split(r'\n\d+\. ', answer)
-        heading = items[0].strip()
-        list_items = [f'<li>{item.strip()}</li>' for item in items[1:] if item.strip()]
-        html = ''
-        if heading:
-            html += f'<h3>{heading}</h3>'
-        if list_items:
-            html += '<ul>' + ''.join(list_items) + '</ul>'
-        return html
-    # Format paragraphs
-    if '\n' in answer:
-        paras = [f'<p>{p.strip()}</p>' for p in answer.split('\n') if p.strip()]
-        return ''.join(paras)
-    # Default: wrap in <p>
-    return f'<p>{answer.strip()}</p>'
-
-@app.route('/')
-def index():
-    return send_from_directory('.', 'index.html')
-
-@app.route('/<path:filename>')
-def serve_static(filename):
-    return send_from_directory('.', filename)
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key="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",  # Replace with your valid OpenRouter API key
+)
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    user_message = request.get_json().get('message', '').lower()
-    # Real-time: Time in India
-    if "time in india" in user_message or "current time india" in user_message:
-        india_time = datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%I:%M %p, %A, %d %B %Y')
-        return jsonify({'response': f"The current time in India is {india_time}."})
-    # Rule-based: Capital of India
-    if "capital of india" in user_message:
-        return jsonify({'response': '<span style="color:#06B6D4;font-weight:bold;">The capital of India is New Delhi.</span>'})
-    # Rule-based responses for greetings and bot info
-    if any(phrase in user_message for phrase in ["how are you", "how r u", "how are u"]):
-        return jsonify({'response': "I'm doing great! I'm OVERLAP, your helpful chatbot assistant. How can I help you today?"})
-    if any(phrase in user_message for phrase in [
-        "who made you", "who created you", "your creator", "who is your creator", "who developed you", "who build you", "who built you", "who is your developer", "who is your maker"]):
-        return jsonify({'response': "I was made by Debanjan."})
-    if any(phrase in user_message for phrase in ["your name", "who are you", "what is your name", "about this chatbot", "what are you"]):
-        return jsonify({'response': "My name is OVERLAP. I'm your AI chatbot assistant, here to help you with anything you need!"})
-    # Curated answers
-    for q, a in CURATED_ANSWERS.items():
-        if q in user_message:
-            return jsonify({'response': a})
-    # Fallback: OpenRouter LLM API using OpenAI SDK
+    user_message = request.get_json().get('message', '')
     try:
         completion = client.chat.completions.create(
             model="moonshotai/kimi-dev-72b:free",
             messages=[
-                {"role": "system", "content": "You are OVERLAP, a super-fast, highly knowledgeable, and professional AI assistant. Always provide detailed, comprehensive, and well-structured answers. Use headings, bullet points, and paragraphs for clarity and readability. Start with a concise summary or main point in bold or highlighted text. Ensure your responses are easy to scan and visually appealing. Respond as quickly as possible while maintaining depth and accuracy."},
                 {"role": "user", "content": user_message}
             ]
         )
         bot_reply = completion.choices[0].message.content
         return jsonify({'response': bot_reply})
     except Exception as e:
-        import traceback
-        print("OpenRouter API exception:", e)
-        traceback.print_exc()
-        return jsonify({'response': "Sorry, there was an error connecting to the LLM API. Please try again later."})
+        return jsonify({'response': f"Error: {str(e)}"})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=8000) 
