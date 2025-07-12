@@ -91,7 +91,7 @@ def chat():
             return jsonify({'response': a})
     # Fallback: OpenRouter LLM API
     # WARNING: Do NOT commit your API key to public repositories. Use environment variables in production.
-    OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY') or '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'
+    OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY') or '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'
     if not OPENROUTER_API_KEY:
         return jsonify({'response': "Sorry, no answer found and no LLM API key is set."})
     headers = {
@@ -99,7 +99,7 @@ def chat():
         "Content-Type": "application/json"
     }
     openrouter_payload = {
-        "model": "openai/gpt-3.5-turbo",
+        "model": "google/gemma-3n-4b",
         "messages": [
             {"role": "system", "content": "You are OVERLAP, a super-fast, highly knowledgeable, and professional AI assistant. Always provide detailed, comprehensive, and well-structured answers. Use headings, bullet points, and paragraphs for clarity and readability. Start with a concise summary or main point in bold or highlighted text. Ensure your responses are easy to scan and visually appealing. Respond as quickly as possible while maintaining depth and accuracy."},
             {"role": "user", "content": user_message}
