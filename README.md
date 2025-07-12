@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Overlap Chatbot
 
 A modern, fast, and customizable AI chatbot web app built with Flask and JavaScript. Overlap provides detailed, structured answers and a beautiful UI, ready for local or cloud deployment.
@@ -48,3 +49,6 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 
 ## License
 MIT 
+=======
+# overlap_ai
+>>>>>>> 9f534cde7e4db5c4013b21071bbbeeede246a29b
