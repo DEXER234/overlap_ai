@@ -13,7 +13,7 @@ from openai import OpenAI
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="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",
+    api_key="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",
 )
 
 app = Flask(__name__)
@@ -98,7 +98,7 @@ def chat():
     # Fallback: OpenRouter LLM API using OpenAI SDK
     try:
         completion = client.chat.completions.create(
-            model="google/gemma-3n-4b",
+            model="moonshotai/kimi-dev-72b:free",
             messages=[
                 {"role": "system", "content": "You are OVERLAP, a super-fast, highly knowledgeable, and professional AI assistant. Always provide detailed, comprehensive, and well-structured answers. Use headings, bullet points, and paragraphs for clarity and readability. Start with a concise summary or main point in bold or highlighted text. Ensure your responses are easy to scan and visually appealing. Respond as quickly as possible while maintaining depth and accuracy."},
                 {"role": "user", "content": user_message}
